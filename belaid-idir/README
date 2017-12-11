@@ -1,0 +1,22 @@
+Authors
+=======
+
+  Belaid Lagha and Idir Lankri
+
+Compilation
+===========
+
+  make
+
+Execution
+=========
+
+  Start the server
+  ================
+
+    java -cp classes/ server.Main
+
+  Start a client
+  ==============
+
+    java -cp classes/ client.Main <server-address>

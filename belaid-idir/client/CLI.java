@@ -1,0 +1,299 @@
+package client;
+
+import common.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+class CLI {
+    private static final Console CONSOLE = System.console();
+    private static BufferedReader in;
+    private static BufferedWriter out;
+    private static boolean quit = false;
+
+    private CLI() {}
+
+    static void init(BufferedReader in, BufferedWriter out)
+        throws SocketException {
+        CLI.in = in;
+        CLI.out = out;
+        Mailbox.open();
+    }
+
+    static boolean quit() {
+        return quit;
+    }
+
+    static String readLine(String prompt) {
+        return CONSOLE.readLine("%s ", prompt);
+    }
+
+    private static void print(String s) {
+        CONSOLE.printf(s);
+    }
+
+    private static void println(String s) {
+        print(s + "\n");
+    }
+
+    static void perror(String msg) {
+        println("Error: " + msg);
+    }
+
+    private static void hint() {
+        println("Hint: Type 'help' for help");
+    }
+
+    static void perrorWithHint(String msg) {
+        perror(msg);
+        hint();
+    }
+
+    private static Response sendRequest(Request request)
+        throws IOException, InvalidResponseException {
+        final String response;
+
+        out.write(request.toString());
+        out.newLine();
+        out.flush();
+        response = in.readLine();
+        if (response == null) {
+            throw new InvalidResponseException();
+        }
+        return Response.valueOf(response);
+    }
+
+    private static void reportResponse(Response response)
+        throws InvalidResponseException {
+        if (!response.ok()) {
+            Response.Error err = response.getError();
+
+            if (err == null) {
+                throw new InvalidResponseException();
+            }
+            perror(response.getError().toString());
+        } else {
+            try {
+                if (response.withPayload()) {
+                    printAds(Ad.valuesOf(response.getPayload()));
+                }
+            } catch (InvalidAdException e) {
+                throw new InvalidResponseException();
+            }
+        }
+    }
+
+    private static void print(Collection<String> strs) {
+        final char[] sep = new char[72];
+
+        Arrays.fill(sep, '=');
+        print(String.join(new String(sep) + "\n", strs));
+    }
+
+    private static void printAds(Collection<Ad> ads) {
+        final Collection<String> adStrs = new LinkedList<String>();
+
+        for (Ad ad: ads) {
+            adStrs.add(String.format("Id: %d\n" +
+                                     "Author: %s\n" +
+                                     "Title: %s\n\n"+
+                                     "%s\n\n",
+                                     ad.getId(), ad.getAuthor(),
+                                     ad.getTitle(), ad.getBody()));
+        }
+        print(adStrs);
+    }
+
+    private static void printInbox() {
+        final Collection<String> msgs = new LinkedList<String>();
+
+        for (Message msg: Mailbox.inbox()) {
+            msgs.add(String.format("Author: %s\n" +
+                                   "Message: %s\n\n",
+                                   msg.getAuthorAddress(),
+                                   msg.getContents()));
+        }
+        print(msgs);
+    }
+
+    static void process(Command cmd, List<String> args)
+        throws IOException, InvalidResponseException,
+               InvalidCLIArgumentsException {
+        final Request request;
+        final Response response;
+
+        if (cmd.getArity() != args.size()) {
+            throw new InvalidCLIArgumentsException();
+        }
+        request = cmd.prepareRequest(args);
+        if (request != null) {
+            response = sendRequest(request);
+            reportResponse(response);
+        }
+        quit = cmd.onSuccess(args);
+    }
+
+    static enum Command {
+        SIGNIN(1) {
+            @Override
+            Request prepareRequest(List<String> args) {
+                final List<String> allArgs = new LinkedList<String>(args);
+
+                allArgs.add("useless-argument");
+                return new Request(Request.Command.SIGNIN, allArgs);
+            }
+
+            @Override
+            boolean onSuccess(List<String> args) {
+                return false;
+            }
+        },
+
+        SIGNOUT(0) {
+            @Override
+            Request prepareRequest(List<String> args) {
+                final List<String> allArgs = new LinkedList<String>(args);
+
+                allArgs.add("useless-argument");
+                allArgs.add("useless-argument");
+                return new Request(Request.Command.SIGNOUT, allArgs);
+            }
+
+            @Override
+            boolean onSuccess(List<String> args) {
+                return false;
+            }
+        },
+
+        ADS(0) {
+            @Override
+            Request prepareRequest(List<String> args) {
+                return new Request(Request.Command.GET,
+                                   new LinkedList<String>(args));
+            }
+
+            @Override
+            boolean onSuccess(List<String> args) {
+                return false;
+            }
+        },
+
+        POST(0) {
+            @Override
+            Request prepareRequest(List<String> args) {
+                final List<String> allArgs = new LinkedList<String>(args);
+
+                allArgs.add(readLine("Title:"));
+                allArgs.add(readLine("Body:"));
+                return new Request(Request.Command.POST, allArgs);
+            }
+
+            @Override
+            boolean onSuccess(List<String> args) {
+                return false;
+            }
+        },
+
+        DELAD(1) {
+            @Override
+            Request prepareRequest(List<String> args)
+                throws InvalidCLIArgumentsException {
+                final List<String> allArgs = new LinkedList<String>(args);
+
+                try {
+                    Long.parseLong(args.get(0));
+                } catch (NumberFormatException e) {
+                    throw new InvalidCLIArgumentsException();
+                }
+                allArgs.add("useless-argument");
+                return new Request(Request.Command.DELETEP, allArgs);
+            }
+
+            @Override
+            boolean onSuccess(List<String> args) {
+                return false;
+            }
+        },
+
+        BYE(0) {
+            @Override
+            Request prepareRequest(List<String> args) {
+                return new Request(Request.Command.BYE,
+                                   new LinkedList<String>(args));
+            }
+
+            @Override
+            boolean onSuccess(List<String> args) {
+                Mailbox.close();
+                return true;
+            }
+        },
+
+        HELP(0) {
+            @Override
+            Request prepareRequest(List<String> args) {
+                return null;
+            }
+
+            @Override
+            boolean onSuccess(List<String> args) {
+                println("Available commands:\n\n" +
+                       "signin <username> Sign in as <username>\n" +
+                       "signout           Sign out\n" +
+                       "ads               List all ads on the server\n" +
+                       "post              Post an ad\n" +
+                       "delad <ad-id>     Delete the ad whose id is <ad-id>\n" +
+                       "contact <ip-addr> Send a message to <ip-addr>\n" +
+                       "inbox             List incoming messages\n" +
+                       "bye               Quit the program\n" +
+                       "help              Display this help");
+                return false;
+            }
+        },
+
+        CONTACT(1) {
+            @Override
+            Request prepareRequest(List<String> args) {
+                return null;
+            }
+
+            @Override
+            boolean onSuccess(List<String> args) {
+                try {
+                    Mailbox.send(InetAddress.getByName(args.get(0)),
+                                 readLine("Message:"));
+                } catch (IOException e) {
+                    perror(e.getMessage());
+                }
+                return false;
+            }
+        },
+
+        INBOX(0) {
+            @Override
+            Request prepareRequest(List<String> args) {
+                return null;
+            }
+
+            @Override
+            boolean onSuccess(List<String> args) {
+                printInbox();
+                return false;
+            }
+        };
+
+        private final int arity;
+
+        private Command(int arity) {
+            this.arity = arity;
+        }
+
+        private int getArity() {
+            return arity;
+        }
+
+        abstract Request prepareRequest(List<String> args)
+            throws InvalidCLIArgumentsException;
+        abstract boolean onSuccess(List<String> args);
+    }
+}
