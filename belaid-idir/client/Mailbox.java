@@ -18,7 +18,7 @@ class Mailbox {
         @Override
         public void run() {
             while (true) {
-                final byte[] buf = new byte[4096];
+                final byte[] buf = new byte[ProtocolParameters.MSG_MAX_SIZE];
                 final DatagramPacket packet =
                     new DatagramPacket(buf, buf.length);
                 final Message msg;
