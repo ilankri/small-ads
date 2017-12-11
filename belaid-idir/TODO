@@ -1,0 +1,21 @@
+À FAIRE
+=======
+
+-> Mettre à jour le protocole client-serveur avec le reste du groupe
+
+-> Rapport
+
+-> Commenter le code
+
+-> Notifier l'utilisateur de la réception d'un nouveau message
+
+-> Améliorer l'interface du client (GUI éventuellement)
+
+FAIT
+====
+
+-> Communication client-serveur en TCP
+
+-> Intégrer les annonces selon l'architecture
+
+-> Communication client-client en UDP
