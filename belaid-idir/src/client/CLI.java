@@ -35,20 +35,20 @@ class CLI {
     private static void println(String s) {
         print(s + "\n");
     }
-    //AFFICHER UNE ERREURE//
+    //AFFICHER UNE ERREUR//
     static void perror(String msg) {
         println("Error: " + msg);
     }
-    //AFFICHER UNE REFERENCE D'AIDE//
+    //AFFICHER UNE RÉFÉRENCE D'AIDE//
     private static void hint() {
         println("Hint: Type 'help' for help");
     }
-    //AFFICHER L'ERREURE ET UNE REFERENCE D'AIDE//
+    //AFFICHER L'ERREUR ET UNE RÉFÉRENCE D'AIDE//
     static void perrorWithHint(String msg) {
         perror(msg);
         hint();
     }
-    //ENVOYER LA REQUETE SI PAS D'ERREURES//
+    //ENVOYER LA REQUÊTE SI PAS D'ERREUR//
     private static Response sendRequest(Request request)
         throws IOException, InvalidResponseException {
         final String response;
@@ -65,7 +65,7 @@ class CLI {
         }
         return Response.valueOf(response);
     }
-    //AFFICHER LA REPONSE DU SERVER OU L'ERREURE EN CAS D'ERREURE//
+    //AFFICHER LA RÉPONSE DU SERVER OU L'ERREUR EN CAS D'ERREUR//
     private static void reportResponse(Response response)
         throws InvalidResponseException {
         if (!response.ok()) {
@@ -92,7 +92,7 @@ class CLI {
         Arrays.fill(sep, '=');
         print(String.join(new String(sep) + "\n", strs));
     }
-    //AFFICHER LES ANNONCES LEUR ID ET LEUR AUTEUR//
+    //AFFICHER LES ANNONCES (LEUR ID, LEUR AUTEUR ET LEUR TITRE)//
     private static void printAds(Collection<Ad> ads) {
         final Collection<String> adStrs = new LinkedList<String>();
 
@@ -106,7 +106,7 @@ class CLI {
         }
         print(adStrs);
     }
-    //AFFICHER TOUS LES MESSAGES DE LA COMMUNICATION AVEC LES AUTRE CLIENTS//
+    //AFFICHER TOUS LES MESSAGES DE LA COMMUNICATION AVEC LES AUTRES CLIENTS//
     private static void printInbox() {
         final Collection<String> msgs = new LinkedList<String>();
 
@@ -118,7 +118,7 @@ class CLI {
         }
         print(msgs);
     }
-    //GÉRER LES REQUETES//
+    //GÉRER LES REQUÊTES//
     static void process(Command cmd, List<String> args)
         throws IOException, InvalidResponseException,
                InvalidCLIArgumentsException {

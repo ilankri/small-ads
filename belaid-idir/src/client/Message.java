@@ -14,7 +14,7 @@ class Message {
     InetAddress getAuthorAddress() {
         return authorAddress;
     }
-    //RETOURNER LE CONTENNUE DU MESSAGE//
+    //RETOURNER LE CONTENU DU MESSAGE//
     String getContents() {
         return contents;
     }

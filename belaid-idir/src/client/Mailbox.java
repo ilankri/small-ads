@@ -51,7 +51,7 @@ class Mailbox {
     private static Inbox inbox;
 
     private Mailbox() {}
-    //OUVRIRE UNE CONNEXION CLIENT CLIENT//
+    //OUVRIR UNE CONNEXION CLIENT CLIENT//
     static void open() throws SocketException {
         socket = new DatagramSocket(ProtocolParameters.CLIENT_PORT);
         inbox = new Inbox();
