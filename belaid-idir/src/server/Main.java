@@ -7,9 +7,25 @@ import java.net.ServerSocket;
 class Main {
     public static void main(String[] args) {
         ServerSocket server = null;
+        int backlog = 100;
+
+        if (args.length > 0) {
+            switch (args[0]) {
+            case "-help":
+                System.out.println(
+                    "Usage: java -cp classes/ server.Main [<backlog>]"
+                );
+                System.exit(0);
+                break;
+            default:
+                try {
+                    backlog = Integer.parseInt(args[0]);
+                } catch (NumberFormatException e) {}
+            }
+        }
 
         try {
-            server = new ServerSocket(ProtocolParameters.SERVER_PORT);
+            server = new ServerSocket(ProtocolParameters.SERVER_PORT, backlog);
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
