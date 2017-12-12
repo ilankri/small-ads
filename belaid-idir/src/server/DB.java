@@ -9,7 +9,7 @@ class DB {
         new Hashtable<InetAddress, User>();
 
     private DB() {}
-
+    //AJOUT D'UN CLIENT A LA LISE DES CLIENT CONNECTÉ//
     static synchronized void createUser(String name, InetAddress addr)
         throws AlreadyUsedUsernameException {
         for (User user: USERS.values()) {
