@@ -12,43 +12,43 @@ class CLI {
     private static boolean quit = false;
 
     private CLI() {}
-
+    //INITIALISATION DES BUFFERS DE COMMUNICATION//
     static void init(BufferedReader in, BufferedWriter out)
         throws SocketException {
         CLI.in = in;
         CLI.out = out;
         Mailbox.open();
     }
-
+    //
     static boolean quit() {
         return quit;
     }
-
+    //LIRE UNE LIGNE SUR L'ENTRÉE CONSOLE//
     static String readLine(String prompt) {
         return CONSOLE.readLine("%s ", prompt);
     }
-
+    //ECRIRE SUR LA SORTIE CONSOLE//
     private static void print(String s) {
         CONSOLE.printf(s);
     }
-
+    //AFFICHER UN MESSAGE 's'//
     private static void println(String s) {
         print(s + "\n");
     }
-
+    //AFFICHER UNE ERREURE//
     static void perror(String msg) {
         println("Error: " + msg);
     }
-
+    //AFFICHER UNE REFERENCE D'AIDE//
     private static void hint() {
         println("Hint: Type 'help' for help");
     }
-
+    //AFFICHER L'ERREURE ET UNE REFERENCE D'AIDE//
     static void perrorWithHint(String msg) {
         perror(msg);
         hint();
     }
-
+    //ENVOYER LA REQUETE SI PAS D'ERREURES//
     private static Response sendRequest(Request request)
         throws IOException, InvalidResponseException {
         final String response;
@@ -65,7 +65,7 @@ class CLI {
         }
         return Response.valueOf(response);
     }
-
+    //AFFICHER LA REPONSE DU SERVER OU L'ERREURE EN CAS D'ERREURE//
     private static void reportResponse(Response response)
         throws InvalidResponseException {
         if (!response.ok()) {
@@ -92,7 +92,7 @@ class CLI {
         Arrays.fill(sep, '=');
         print(String.join(new String(sep) + "\n", strs));
     }
-
+    //AFFICHER LES ANNONCES LEUR ID ET LEUR AUTEUR//
     private static void printAds(Collection<Ad> ads) {
         final Collection<String> adStrs = new LinkedList<String>();
 
@@ -106,7 +106,7 @@ class CLI {
         }
         print(adStrs);
     }
-
+    //AFFICHER TOUS LES MESSAGES DE LA COMMUNICATION AVEC LES AUTRE CLIENTS//
     private static void printInbox() {
         final Collection<String> msgs = new LinkedList<String>();
 
@@ -118,7 +118,7 @@ class CLI {
         }
         print(msgs);
     }
-
+    //GÉRER LES REQUETES//
     static void process(Command cmd, List<String> args)
         throws IOException, InvalidResponseException,
                InvalidCLIArgumentsException {
@@ -135,7 +135,7 @@ class CLI {
         }
         quit = cmd.onSuccess(args);
     }
-
+    //LES COMMANDES POSSIBLES//
     static enum Command {
         SIGNIN(1) {
             @Override
@@ -286,11 +286,11 @@ class CLI {
         };
 
         private final int arity;
-
+        //INITIALISATION DE L'ARITÉ DE LA COMMANDE (NBR ARGUMENTS)//
         private Command(int arity) {
             this.arity = arity;
         }
-
+        //RETOURNER L'ARITÉ DE LA COMMANDE//
         private int getArity() {
             return arity;
         }

@@ -12,7 +12,7 @@ class Main {
             System.exit(1);
         }
 
-        try (
+        try (//INITIALISATION DES BUFFERS D'ENTREÉ SORTIE ET LA SOCKET//
             Socket socket = new Socket(args[0], ProtocolParameters.SERVER_PORT);
             BufferedReader in = new BufferedReader(
                 new InputStreamReader(socket.getInputStream())
@@ -23,13 +23,13 @@ class Main {
         ) {
             Logger.info("Establish connection with the server");
             CLI.init(in, out);
-
+            //TANTQUE LE CLIENT VEUT PAS QUITER LA CONNEXION//
             while (!CLI.quit()) {
                 final String rawCmdLine;
                 final CLI.Command cmd;
                 final Response response;
                 final List<String> argv = new LinkedList<String>();
-
+                //LIRE LA REQUETE DEPUIS LA CONSOLE/CLIC//
                 rawCmdLine = CLI.readLine(">");
                 if (rawCmdLine == null) { /* The user type Ctrl-d.  */
                     cmd = CLI.Command.BYE;

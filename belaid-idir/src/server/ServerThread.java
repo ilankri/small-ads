@@ -100,7 +100,7 @@ class ServerThread extends Thread implements Request.Handler {
             BufferedWriter out = new BufferedWriter(
                 new OutputStreamWriter(socket.getOutputStream())
             );
-        ) {//TANQUE LE CLIENT ET CONNECTÉ ET LES REQUETES SONT OK//
+        ) {//TANTQUE LE CLIENT ET CONNECTÉ ET LES REQUETES SONT OK//
             while (!quit) {
                 final String rawRequest;
                 Response response;

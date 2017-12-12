@@ -8,7 +8,7 @@ import java.util.*;
 class Mailbox {
     private static class Inbox extends Thread {
         private final Collection<Message> contents = new LinkedList<Message>();
-
+        //RECUPÉRER LES MESSAGES REÇUS//
         Collection<Message> getContents() {
             synchronized (contents) {
                 return Collections.unmodifiableCollection(contents);
@@ -51,17 +51,17 @@ class Mailbox {
     private static Inbox inbox;
 
     private Mailbox() {}
-
+    //OUVRIRE UNE CONNEXION CLIENT CLIENT//
     static void open() throws SocketException {
         socket = new DatagramSocket(ProtocolParameters.CLIENT_PORT);
         inbox = new Inbox();
         inbox.start();
     }
-
+    //FERMER LA CONNEXION//
     static void close() {
         socket.close();
     }
-
+    //ENVOYER UN MESSAGE 'msg' POUR LE CLIENT DE L'ADRESSE 'addr'//
     static void send(InetAddress addr, String msg) throws IOException {
         final byte[] rawMsg = msg.getBytes(ProtocolParameters.CHARSET);
 
