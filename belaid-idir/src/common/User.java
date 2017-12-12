@@ -18,9 +18,11 @@ public class User {
         this.address = address;
         this.ads = new LinkedList<Ad>();
     }
+
     /***********/
     /* Getters */
     /***********/
+
     //RETOURNER LE NOM DU CLIENT//
     public String getName() {
         return name;
