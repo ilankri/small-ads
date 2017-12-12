@@ -2,14 +2,26 @@ package common;
 
 import java.util.*;
 
+/* Class representing an ad */
 public class Ad {
+    /* Counter to generate fresh id for ads.  */
     private static Long nbAds = 0L;
 
+    /* The ad's id. */
     private final Long id;
+
+    /* The ad's title.  */
     private final String title;
+
+    /* The ad's body.  */
     private final String body;
+
+    /* The ad's author.  */
     private final User author;
 
+    /****************/
+    /* Constructors */
+    /****************/
     public Ad(String title, String body, User author) {
         synchronized (nbAds) {
             id = nbAds++;
@@ -27,6 +39,9 @@ public class Ad {
         this.author = new User(authorName, authorAddr);
     }
 
+    /***********/
+    /* Getters */
+    /***********/
     public long getId() {
         return id;
     }
@@ -43,6 +58,15 @@ public class Ad {
         return author;
     }
 
+
+    /**********************/
+    /* Ad parsing methods */
+    /**********************/
+
+    /*
+     * Parse the given string according to the format of ads sent by the
+     * server.
+     */
     private static Ad valueOf(String s) throws InvalidAdException {
         final String[] tokens = s.split(ProtocolParameters.FIELD_SEP, 4);
 
@@ -58,6 +82,11 @@ public class Ad {
                       tokens[2]);
     }
 
+    /*
+     * Build a collection of ads based on the given string which
+     * corresponds to the payload sent back by the server when it
+     * responds to a GET request.
+     */
     public static Collection<Ad> valuesOf(String s) throws InvalidAdException {
         final String[] tokens = s.split(ProtocolParameters.AD_SEP);
         final Collection<Ad> ads = new LinkedList<Ad>();
@@ -70,6 +99,9 @@ public class Ad {
         return ads;
     }
 
+    /************************/
+    /* Serialization of ads */
+    /************************/
     @Override
     public String toString() {
         return String.join(ProtocolParameters.FIELD_SEP, id.toString(), title,
