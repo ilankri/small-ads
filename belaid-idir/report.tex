@@ -63,6 +63,17 @@ Le serveur est \emph{a priori} toujours disponible\dots{} tant qu'il
 a suffisamment de mémoire puisqu'on utilise une base de données en
 mémoire.
 
+Les clients sont traités de manière complètement équitable puisqu'on
+attribue un \texten{thread} par client.
+
+Une des gros points faibles de notre application est qu'on ne garantit
+rien du tout sur les messages échangés entre les clients que ce soit en
+termes de confidentialité ou même simplement sur le fait que les
+messages envoyés arrivent bien à destination.
+
+Pour éviter des attaques de type déni de service sur le serveur, on
+limite le nombre de connexions acceptées par le serveur.
+
 \end{document}
 
 %%% Local Variables:
