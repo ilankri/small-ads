@@ -7,7 +7,8 @@ DIST = projet-protint
 
 compile = $(JAVAC) $(JAVACFLAGS)
 
-dirs = common server client
+srcdir = src
+dirs = $(addprefix $(srcdir)/,common server client)
 destdir = classes
 
 .PHONY: all dist clean mrproper

@@ -14,9 +14,9 @@ Execution
   Start the server
   ================
 
-    java -cp classes/ server.Main
+    ./server
 
   Start a client
   ==============
 
-    java -cp classes/ client.Main <server-address>
+    ./client <server-address>
