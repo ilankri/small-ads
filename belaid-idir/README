@@ -23,3 +23,6 @@ Execution
   ==============
 
     ./client <server-address>
+
+    A log file 'client.log' stores the different messages exchanged on
+    the network.  It can be used for debugging purpose.
