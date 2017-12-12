@@ -21,6 +21,7 @@ class Main {
                 new OutputStreamWriter(socket.getOutputStream())
             );
         ) {
+            Logger.info("Establish connection with the server");
             CLI.init(in, out);
 
             while (!CLI.quit()) {
@@ -53,11 +54,10 @@ class Main {
                 }
                 try {
                     CLI.process(cmd, argv);
-                } catch (InvalidResponseException e) {
+                } catch (InvalidResponseException | IOException e) {
                     CLI.perror(e.getMessage());
                 } catch (InvalidCLIArgumentsException e) {
                     CLI.perrorWithHint(e.getMessage());
-
                 }
             }
         } catch (IOException e) {

@@ -52,11 +52,14 @@ class CLI {
     private static Response sendRequest(Request request)
         throws IOException, InvalidResponseException {
         final String response;
+        final String rawRequest = request.toString();
 
-        out.write(request.toString());
+        out.write(rawRequest);
         out.newLine();
         out.flush();
+        Logger.info("Send request '" + rawRequest + "'");
         response = in.readLine();
+        Logger.info("Receive response '" + response + "'");
         if (response == null) {
             throw new InvalidResponseException();
         }

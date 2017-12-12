@@ -24,14 +24,24 @@ class Mailbox {
                 final Message msg;
 
                 try {
+                    final String msgContents;
+                    final InetAddress addr;
+
                     socket.receive(packet);
-                    msg = new Message(packet.getAddress(),
-                                      new String(packet.getData()));
+                    msgContents = new String(packet.getData(), 0,
+                                             packet.getLength(),
+                                             ProtocolParameters.CHARSET);
+                    addr = packet.getAddress();
+                    Logger.info("Receive message '" + msgContents +
+                                "' from " + addr);
+                    msg = new Message(addr, msgContents);
                     synchronized (contents) {
                         contents.add(msg);
                     }
-                } catch (java.io.IOException e) {
+                } catch (SocketException e) {
                     break;
+                } catch (IOException e) {
+                    continue;
                 }
             }
         }
@@ -53,10 +63,11 @@ class Mailbox {
     }
 
     static void send(InetAddress addr, String msg) throws IOException {
-        final byte[] rawMsg = msg.getBytes();
+        final byte[] rawMsg = msg.getBytes(ProtocolParameters.CHARSET);
 
         socket.send(new DatagramPacket(rawMsg, rawMsg.length, addr,
                                        ProtocolParameters.CLIENT_PORT));
+        Logger.info("Send message '" + msg + "' to " + addr);
     }
 
     static Collection<Message> inbox() {
