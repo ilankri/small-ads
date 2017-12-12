@@ -9,6 +9,7 @@ class Main {
         ServerSocket server = null;
         int backlog = 100;
 
+        //AFFICHER DE L'AIDE POUR LANCER LE SERVEUR//
         if (args.length > 0) {
             switch (args[0]) {
             case "-help":
@@ -34,6 +35,7 @@ class Main {
         System.out.println("Server started on port " + server.getLocalPort());
         while (true) {
             try {
+                //UN THREAD POUR CHAQUE CONNEXION//
                 (new ServerThread(server.accept())).start();
             } catch (IOException e) {
                 System.err.println(e);

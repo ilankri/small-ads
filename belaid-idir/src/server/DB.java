@@ -19,7 +19,7 @@ class DB {
         }
         USERS.put(addr, new User(name, addr.toString()));
     }
-
+    //AJOUTER UNE ANNONCE D'UN CLIENT//
     static void createAd(InetAddress userAddr, String title,
                          String body) {
         final User user = DB.readUser(userAddr);
@@ -28,11 +28,11 @@ class DB {
             user.postAd(title, body);
         }
     }
-
+    //SUPPRIMER LE CLIENT DE LA LISTE DES CLIENTS CONNECTÉS//
     static synchronized void deleteUser(InetAddress userAddr) {
         USERS.remove(userAddr);
     }
-
+    //SUPPRIMER UNE ANNONCE D'UN CLIENT//
     static boolean deleteAd(InetAddress userAddr, long adId) {
         final User user = DB.readUser(userAddr);
 
@@ -40,11 +40,11 @@ class DB {
             return user.deleteAd(adId);
         }
     }
-
+    //RECUPÉRER LE PROPRIÉTAIRE DE L'ANNONCE//
     static synchronized User readUser(InetAddress userAddr) {
         return USERS.get(userAddr);
     }
-
+    //RECUPÉRER TOUTES LES ANNONCES DE TOUS LES CLIENT//
     static Collection<Ad> readAllAds() {
         Collection<Ad> ads = new LinkedList<Ad>();
 

@@ -17,7 +17,7 @@ class ServerThread extends Thread implements Request.Handler {
         isSignedIn = false;
         quit = false;
     }
-
+    //AJOUTER UN CLIENT QUI VIENT DE SE CONNECTÉ//
     public Response signin(String name) {
         try {
             if (isSignedIn) {
@@ -30,12 +30,13 @@ class ServerThread extends Thread implements Request.Handler {
             return new Response(Response.Error.ALREADY_USED_USERNAME);
         }
     }
-
+    //SUPPRIMER UN CLIENT AINSI QUE TOUTES SES ANNANCES//
     private void deleteUser() {
         DB.deleteUser(remoteAddr);
         isSignedIn = false;
     }
-
+    //SUPPRIMER LE CLIENT QUI DEMMANDE LA DÉCONNEXION//
+    //ET LE SUPRIMMER DE LA LISTE DES CLIENTS CONNECTER//
     public Response signout() {
         if (!isSignedIn) {
             return new Response(Response.Error.NOT_SIGNED_IN);
@@ -43,11 +44,11 @@ class ServerThread extends Thread implements Request.Handler {
         deleteUser();
         return new Response("");
     }
-
+    //RENVOYER TOUTES LES ANNONCES DE TOUS LES CLIENTS//
     public Response get() {
         return new Response(Ad.toString(DB.readAllAds()));
     }
-
+    //AJOUTER L'ANNONCE RÉCEMMENT CRÉE PAR LE CLIENT// 
     public Response post(String title, String body) {
         if (!isSignedIn) {
             return new Response(Response.Error.NOT_SIGNED_IN);
@@ -55,13 +56,13 @@ class ServerThread extends Thread implements Request.Handler {
         DB.createAd(remoteAddr, title, body);
         return new Response("");
     }
-
+    //GÉRER LA DÉCONNEXION D'UN CLIENT//
     public Response bye() {
         deleteUser();
         quit = true;
         return new Response("");
     }
-
+    //SUPPRIMER UNE ANNONCES D'UN CLIENT//
     public Response deletep(long adId) {
         if (!isSignedIn) {
             return new Response(Response.Error.NOT_SIGNED_IN);
@@ -72,7 +73,7 @@ class ServerThread extends Thread implements Request.Handler {
             return new Response(Response.Error.OPERATION_NOT_PERMITTED);
         }
     }
-
+    //PARCER LA REQUETE ET RETOURNER LA REPONSE SOULON LA CAMMANDE//
     private Response process(Request request) {
         final Request.Command cmd = request.getCmd();
         final List<String> args = request.getArgs();
@@ -80,7 +81,7 @@ class ServerThread extends Thread implements Request.Handler {
         assert(cmd.getArity() == args.size());
         return cmd.process(this, args);
     }
-
+    //ENVOYER LA REPONSE AU CLIENT//
     private void sendResponse(BufferedWriter out, Response response)
         throws IOException {
         out.write(response.toString());
@@ -91,6 +92,7 @@ class ServerThread extends Thread implements Request.Handler {
     @Override
     public void run() {
         System.out.println("Connect " + remoteAddr);
+        //INITIALISATION DES BUFFERS//
         try (
             BufferedReader in = new BufferedReader(
                 new InputStreamReader(socket.getInputStream())
@@ -98,7 +100,7 @@ class ServerThread extends Thread implements Request.Handler {
             BufferedWriter out = new BufferedWriter(
                 new OutputStreamWriter(socket.getOutputStream())
             );
-        ) {
+        ) {//TANQUE LE CLIENT ET CONNECTÉ ET LES REQUETES SONT OK//
             while (!quit) {
                 final String rawRequest;
                 Response response;
