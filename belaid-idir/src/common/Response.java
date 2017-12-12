@@ -2,7 +2,13 @@ package common;
 
 import java.util.*;
 
+/* Class representing server responses.  */
 public class Response {
+
+    /*
+     * The different errors issued by the server.  See the protocol
+     * specification for more information.
+     */
     public static enum Error {
         ALREADY_USED_USERNAME(1) {
             @Override
@@ -50,29 +56,55 @@ public class Response {
             }
         }
 
+        /* The error code.  */
         private final int code;
 
         private Error(int code) {
             this.code = code;
         }
 
+        /*
+         * Return the error associated to the given code.  Return null
+         * when there is no error associated with the given code.
+         */
         private static Error valueOf(int code) {
             return map.get(code);
         }
     }
 
+    /*
+     * Either a request was successfully processed (OK) or else its
+     * processing failed (KO).
+     */
     private enum Status { OK, KO }
 
+    /*
+     * The status code to signal if the processing of the request
+     * succeed or not.
+     */
     private final Status status;
+
+    /* The error/success code.  */
     private final int code;
+
+    /*
+     * The payload of the response.  It is non-empty only for responses
+     * to GET requests.
+     */
     private final String payload;
 
+    /****************/
+    /* Constructors */
+    /****************/
+
+    /* A response to signal success.  */
     public Response(String payload) {
         this.status = Status.OK;
         this.code = payload.isEmpty() ? 0 : 1;
         this.payload = payload;
     }
 
+    /* A response to signal failure.  */
     public Response(Error err) {
         this.status = Status.KO;
         this.code = err.code;
@@ -85,6 +117,20 @@ public class Response {
         this.payload = payload;
     }
 
+    /***********/
+    /* Getters */
+    /***********/
+    public String getPayload() {
+        return payload;
+    }
+
+    public Error getError() {
+        return Error.valueOf(code);
+    }
+
+    /*******************/
+    /* Response parser */
+    /*******************/
     public static Response valueOf(String response)
         throws InvalidResponseException {
         final String[] tokens = response.split(ProtocolParameters.FIELD_SEP, 3);
@@ -110,22 +156,23 @@ public class Response {
         }
     }
 
+    /***************/
+    /* Testers     */
+    /***************/
+
+    /* Test whether it is a reponse to signal a success.  */
     public boolean ok() {
         return status == Status.OK;
     }
 
-    public String getPayload() {
-        return payload;
-    }
-
+    /* Test whether the reponse has a payload.  */
     public boolean withPayload() {
         return ok() && code == 1;
     }
 
-    public Error getError() {
-        return Error.valueOf(code);
-    }
-
+    /******************************/
+    /* Serialization of responses */
+    /******************************/
     @Override
     public String toString() {
         return status + ProtocolParameters.FIELD_SEP + code +

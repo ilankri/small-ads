@@ -2,7 +2,13 @@ package common;
 
 import java.util.*;
 
+/* Class representing requests sent by the client to the server.  */
 public class Request {
+
+    /*
+     * A request handler must specifiy a method to process each
+     * available command specified by the protocol.
+     */
     public static interface Handler {
         Response signin(String name);
         Response signout();
@@ -12,6 +18,10 @@ public class Request {
         Response deletep(long adId);
     }
 
+    /*
+     * Available request commands.  See the protocol specificatio for
+     * details.
+     */
     public static enum Command {
         SIGNIN(2) {
             @Override
@@ -65,27 +75,54 @@ public class Request {
             }
         };
 
+        /* The number of arguments needed by the command.  */
         private final int arity;
 
         private Command(int arity) {
             this.arity = arity;
         }
 
+        /*
+         * Call the handler to process the command with the given
+         * arguments.
+         */
         public abstract Response process(Handler handler, List<String> args);
 
+        /* Return the number of arguments expected by a command.  */
         public int getArity() {
             return arity;
         }
     }
 
+    /* The command of the request.  */
     private final Command cmd;
+
+    /* The arguments of the command.  */
     private final List<String> args;
 
+    /***************/
+    /* Constructor */
+    /***************/
     public Request(Command cmd, List<String> args) {
         this.cmd = cmd;
         this.args = args;
     }
 
+
+    /***********/
+    /* Getters */
+    /***********/
+    public Command getCmd() {
+        return cmd;
+    }
+
+    public List<String> getArgs() {
+        return Collections.unmodifiableList(args);
+    }
+
+    /******************/
+    /* Request parser */
+    /******************/
     public static Request valueOf(String request)
         throws InvalidRequestException {
         final String[] tokens = request.split(ProtocolParameters.FIELD_SEP, 2);
@@ -121,14 +158,9 @@ public class Request {
 
     }
 
-    public Command getCmd() {
-        return cmd;
-    }
-
-    public List<String> getArgs() {
-        return Collections.unmodifiableList(args);
-    }
-
+    /*****************************/
+    /* Serialization of requests */
+    /*****************************/
     @Override
     public String toString() {
         final String rest = String.join(ProtocolParameters.FIELD_SEP, args);

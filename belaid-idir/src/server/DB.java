@@ -9,7 +9,7 @@ class DB {
         new Hashtable<InetAddress, User>();
 
     private DB() {}
-    //AJOUT D'UN CLIENT A LA LISE DES CLIENT CONNECTÉ//
+    //AJOUT D'UN CLIENT A LA LISTE DES CLIENTS CONNECTÉS//
     static synchronized void createUser(String name, InetAddress addr)
         throws AlreadyUsedUsernameException {
         for (User user: USERS.values()) {
@@ -44,7 +44,7 @@ class DB {
     static synchronized User readUser(InetAddress userAddr) {
         return USERS.get(userAddr);
     }
-    //RECUPÉRER TOUTES LES ANNONCES DE TOUS LES CLIENT//
+    //RECUPÉRER TOUTES LES ANNONCES DE TOUS LES CLIENTS//
     static Collection<Ad> readAllAds() {
         Collection<Ad> ads = new LinkedList<Ad>();
 
