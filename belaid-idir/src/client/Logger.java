@@ -23,7 +23,7 @@ class Logger {
         }
         return logger;
     }
-
+    //AJOUT DE L'INFORMATION SUR L'HESTORIQUE DE CONNEXION DU CLIENT//
     static void info(String msg) {
         logger.log(Level.INFO, msg);
     }
