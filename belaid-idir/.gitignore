@@ -1,3 +1,6 @@
 *.class
 *.tgz
 *.log
+*.aux
+*.out
+*.synctex.gz

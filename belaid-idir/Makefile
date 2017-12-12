@@ -1,27 +1,39 @@
 SHELL = /bin/sh
 RM = rm -f
-JAVAC = javac
-JAVACFLAGS = -g -Xlint -Xlint:-serial -deprecation
 
 DIST = projet-protint
 
-compile = $(JAVAC) $(JAVACFLAGS)
+JAVAC = javac
+JAVACFLAGS = -g -Xlint -Xlint:-serial -deprecation
 
+javacompile = $(JAVAC) $(JAVACFLAGS)
 srcdir = src
 dirs = $(addprefix $(srcdir)/,common server client)
 destdir = classes
 
-.PHONY: all dist clean mrproper
+PDFLATEX = pdflatex
+PDFLATEXFLAGS = -interaction nonstopmode -file-line-error -synctex=1
+REPORTPDF = report.pdf
+REPORTTEX = report.tex
+
+texcompile = $(PDFLATEX) $(PDFLATEXFLAGS)
+
+.PHONY: all dist clean
 
 all:
 	mkdir -p $(destdir)
-	$(compile) -d $(destdir) $(foreach dir,$(dirs),$(dir)/*.java)
+	$(javacompile) -d $(destdir) $(foreach dir,$(dirs),$(dir)/*.java)
 
-dist: mrproper
-	tar -cvzf ../$(DIST).tgz -C .. petitesAnnonces
+$(REPORTPDF): $(REPORTTEX)
+	$(texcompile) $<
+	$(texcompile) $<
+
+dist: clean $(REPORTPDF)
+	tar -cvzf $(DIST).tgz						\
+		--exclude-backups --exclude="\#*\#" --exclude=".\#*"	\
+		Makefile README client server $(REPORTPDF) $(srcdir)
 
 clean:
 	$(RM) -R $(destdir)
-
-mrproper: clean
-	$(RM) *~ \#*\# .\#*
+	$(RM) $(REPORTTEX:.tex=.log) $(REPORTTEX:.tex=.aux)		\
+		$(REPORTTEX:.tex=.out) $(REPORTTEX:.tex=.synctex.gz)
