@@ -26,10 +26,42 @@
 \maketitle{}
 
 \section{Architecture du serveur}
+Le serveur attend les connexions des clients sur le port $1027$ comme
+spécifié dans le protocole.  Le serveur accepte les connexions jusqu'à
+ce que le nombre de limite de connexions ouvertes soit atteint.  Par
+défaut, on a fixé arbitrairement cette limite à $100$ mais on a la
+possibilité de faire varier ce nombre en lançant le serveur avec un
+argument en ligne de commande (voir le fichier \texttt{README}).
+
+Une fois la connexion entrante acceptée, le serveur lance un
+\texten{thread} (voir la classe \texttt{server.ServerThread}) qui va traiter
+les requêtes envoyés par ce client.  Le serveur peut donc (et
+heureusement) gérer plusieurs clients à la fois.
+
+Pour stocker les annonces sur le serveur, on utilise une base de données
+\texten{in-memory} (classe singleton \texttt{server.DB}).  Cette base de
+données vise simplement à maintenir une association entre une adresse IP
+et un utilisateur (modélisé par la classe \texttt{common.User}).  Cette
+base de données pouvant être utilisée de manière concurrente par les
+différents \texten{threads} du serveur, on a pris soin d'en protéger les
+accès.
 
 \section{Architecture du client}
+Le programme client est composé d'une boucle interactive principale qui
+exécutent les commandes du client : se \texten{logger}, lister les
+annonces, poster une annonce, supprimer une annonce, envoyer un message
+à un autre client, lister les messages reçus et se déconnecter.
+
+La gestion des messages échangés entre client est faite de manière
+similaire à une boîte mail.  La réception des messages provenant des
+autres clients est faite de manière asynchrone, c'est-à-dire qu'on a un
+\texten{thread} en arrière plan qui s'occupe de gérer la réception des
+messages UDP des clients (voir la classe \texttt{Mailbox.Inbox}).
 
 \section{Analyse de sécurité}
+Le serveur est \emph{a priori} toujours disponible\dots{} tant qu'il
+a suffisamment de mémoire puisqu'on utilise une base de données en
+mémoire.
 
 \end{document}
 
