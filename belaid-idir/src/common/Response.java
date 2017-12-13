@@ -160,6 +160,6 @@ public class Response {
     @Override
     public String toString() {
         return status + ProtocolParameters.FIELD_SEP + code +
-            ProtocolParameters.FIELD_SEP + payload;
+            (ok() ? ProtocolParameters.FIELD_SEP : "") + payload;
     }
 }
