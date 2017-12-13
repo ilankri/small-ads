@@ -11,6 +11,10 @@ class Main {
             System.err.println("Please specify the server address.");
             System.exit(1);
         }
+        if (args[0].equals("-help")) {
+            System.out.println("Usage: ./client <server-address>");
+            System.exit(0);
+        }
 
         try (//INITIALISATION DES BUFFERS D'ENTRÉE SORTIE ET LA SOCKET//
             Socket socket = new Socket(args[0], ProtocolParameters.SERVER_PORT);

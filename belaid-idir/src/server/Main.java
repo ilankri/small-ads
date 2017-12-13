@@ -11,17 +11,16 @@ class Main {
 
         //AFFICHER DE L'AIDE POUR LANCER LE SERVEUR//
         if (args.length > 0) {
-            switch (args[0]) {
-            case "-help":
-                System.out.println(
-                    "Usage: java -cp classes/ server.Main [<backlog>]"
-                );
+            if (args[0].equals("-help")) {
+                System.out.println("Usage: ./server [<backlog>]");
                 System.exit(0);
-                break;
-            default:
+            } else {
                 try {
                     backlog = Integer.parseInt(args[0]);
-                } catch (NumberFormatException e) {}
+                } catch (NumberFormatException e) {
+                    System.err.println("Invalid backlog.");
+                    System.exit(1);
+                }
             }
         }
 
