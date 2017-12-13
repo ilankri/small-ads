@@ -18,7 +18,7 @@ class Logger {
 
         try {
             LogManager.getLogManager().reset();
-            handler = new FileHandler("bar/client.log");
+            handler = new FileHandler("client.log");
             handler.setFormatter(new SimpleFormatter());
             logger = java.util.logging.Logger.getLogger("client");
             logger.addHandler(handler);
