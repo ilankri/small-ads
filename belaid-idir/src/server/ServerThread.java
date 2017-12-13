@@ -20,9 +20,6 @@ class ServerThread extends Thread implements Request.Handler {
     //AJOUTER UN CLIENT QUI VIENT DE SE CONNECTER//
     public Response signin(String name) {
         try {
-            if (isSignedIn) {
-                return new Response(Response.Error.ALREADY_SIGNED_IN);
-            }
             DB.createUser(name, remoteAddr);
             isSignedIn = true;
             return new Response("");
@@ -42,6 +39,7 @@ class ServerThread extends Thread implements Request.Handler {
             return new Response(Response.Error.NOT_SIGNED_IN);
         }
         deleteUser();
+        quit = true;
         return new Response("");
     }
     //RENVOYER TOUTES LES ANNONCES DE TOUS LES CLIENTS//
@@ -56,12 +54,6 @@ class ServerThread extends Thread implements Request.Handler {
         DB.createAd(remoteAddr, title, body);
         return new Response("");
     }
-    //GÉRER LA DÉCONNEXION D'UN CLIENT//
-    public Response bye() {
-        deleteUser();
-        quit = true;
-        return new Response("");
-    }
     //SUPPRIMER UNE ANNONCE D'UN CLIENT//
     public Response deletep(long adId) {
         if (!isSignedIn) {
@@ -70,7 +62,7 @@ class ServerThread extends Thread implements Request.Handler {
         if (DB.deleteAd(remoteAddr, adId)) {
             return new Response("");
         } else {
-            return new Response(Response.Error.OPERATION_NOT_PERMITTED);
+            return new Response(Response.Error.NOT_SIGNED_IN);
         }
     }
     //PARSER LA REQUÊTE ET RETOURNER LA RÉPONSE SELON LA COMMANDE//

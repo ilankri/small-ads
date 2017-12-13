@@ -10,6 +10,8 @@ class CLI {
     private static BufferedReader in;
     private static BufferedWriter out;
     private static boolean quit = false;
+    private static boolean signedOut = false;
+    private static String username;
 
     private CLI() {}
     //INITIALISATION DES BUFFERS DE COMMUNICATION//
@@ -40,7 +42,7 @@ class CLI {
         println("Error: " + msg);
     }
     //AFFICHER UNE RÉFÉRENCE D'AIDE//
-    private static void hint() {
+    public static void hint() {
         println("Hint: Type 'help' for help");
     }
     //AFFICHER L'ERREUR ET UNE RÉFÉRENCE D'AIDE//
@@ -50,19 +52,26 @@ class CLI {
     }
     //ENVOYER LA REQUÊTE SI PAS D'ERREUR//
     private static Response sendRequest(Request request)
-        throws IOException, InvalidResponseException {
+        throws IOException, InvalidResponseException,
+               NoServerConnectionException {
         final String response;
         final String rawRequest = request.toString();
 
+        if (signedOut) {
+            throw new NoServerConnectionException();
+        }
         out.write(rawRequest);
         out.newLine();
         out.flush();
         Logger.info("Send request '" + rawRequest + "'");
         response = in.readLine();
-        Logger.info("Receive response '" + response + "'");
         if (response == null) {
-            throw new InvalidResponseException();
+            signedOut = true;
+            in.close();
+            out.close();
+            throw new NoServerConnectionException();
         }
+        Logger.info("Receive response '" + response + "'");
         return Response.valueOf(response);
     }
     //AFFICHER LA RÉPONSE DU SERVER OU L'ERREUR EN CAS D'ERREUR//
@@ -121,7 +130,7 @@ class CLI {
     //GÉRER LES REQUÊTES//
     static void process(Command cmd, List<String> args)
         throws IOException, InvalidResponseException,
-               InvalidCLIArgumentsException {
+               InvalidCLIArgumentsException, NoServerConnectionException {
         final Request request;
         final Response response;
 
@@ -142,7 +151,7 @@ class CLI {
             Request prepareRequest(List<String> args) {
                 final List<String> allArgs = new LinkedList<String>(args);
 
-                allArgs.add("useless-argument");
+                username = allArgs.get(0);
                 return new Request(Request.Command.SIGNIN, allArgs);
             }
 
@@ -157,8 +166,7 @@ class CLI {
             Request prepareRequest(List<String> args) {
                 final List<String> allArgs = new LinkedList<String>(args);
 
-                allArgs.add("useless-argument");
-                allArgs.add("useless-argument");
+                allArgs.add(username);
                 return new Request(Request.Command.SIGNOUT, allArgs);
             }
 
@@ -208,7 +216,7 @@ class CLI {
                 } catch (NumberFormatException e) {
                     throw new InvalidCLIArgumentsException();
                 }
-                allArgs.add("useless-argument");
+                allArgs.add(username);
                 return new Request(Request.Command.DELETEP, allArgs);
             }
 
@@ -221,8 +229,7 @@ class CLI {
         BYE(0) {
             @Override
             Request prepareRequest(List<String> args) {
-                return new Request(Request.Command.BYE,
-                                   new LinkedList<String>(args));
+                return null;
             }
 
             @Override

@@ -23,6 +23,7 @@ class Main {
         ) {
             Logger.info("Establish connection with the server");
             CLI.init(in, out);
+            CLI.hint();
             //TANT QUE LE CLIENT VEUT PAS QUITER LA CONNEXION//
             while (!CLI.quit()) {
                 final String rawCmdLine;
@@ -55,6 +56,8 @@ class Main {
                 try {
                     CLI.process(cmd, argv);
                 } catch (InvalidResponseException | IOException e) {
+                    CLI.perror(e.getMessage());
+                } catch (NoServerConnectionException e) {
                     CLI.perror(e.getMessage());
                 } catch (InvalidCLIArgumentsException e) {
                     CLI.perrorWithHint(e.getMessage());

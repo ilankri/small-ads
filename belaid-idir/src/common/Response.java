@@ -17,8 +17,6 @@ public class Response {
             }
         },
 
-        INVALID_CREDENTIALS(2),
-
         ILL_FORMED_REQUEST(3) {
             @Override
             public String toString() {
@@ -30,20 +28,6 @@ public class Response {
             @Override
             public String toString() {
                 return "Please sign in before";
-            }
-        },
-
-        OPERATION_NOT_PERMITTED(5) {
-            @Override
-            public String toString() {
-                return "Operation not permitted";
-            }
-        },
-
-        ALREADY_SIGNED_IN(6) {
-            @Override
-            public String toString() {
-                return "You are already signed in";
             }
         };
 
@@ -176,6 +160,6 @@ public class Response {
     @Override
     public String toString() {
         return status + ProtocolParameters.FIELD_SEP + code +
-            (withPayload() ? (ProtocolParameters.FIELD_SEP + payload) : "");
+            ProtocolParameters.FIELD_SEP + payload;
     }
 }

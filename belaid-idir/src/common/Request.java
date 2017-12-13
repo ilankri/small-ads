@@ -14,7 +14,6 @@ public class Request {
         Response signout();
         Response get();
         Response post(String title, String body);
-        Response bye();
         Response deletep(long adId);
     }
 
@@ -23,14 +22,14 @@ public class Request {
      * details.
      */
     public static enum Command {
-        SIGNIN(2) {
+        SIGNIN(1) {
             @Override
             public Response process(Handler handler, List<String> args) {
                 return handler.signin(args.get(0));
             }
         },
 
-        SIGNOUT(2) {
+        SIGNOUT(1) {
             @Override
             public Response process(Handler handler, List<String> args) {
                 return handler.signout();
@@ -65,13 +64,6 @@ public class Request {
                 } catch (NumberFormatException e) {
                     return new Response(Response.Error.ILL_FORMED_REQUEST);
                 }
-            }
-        },
-
-        BYE(0) {
-            @Override
-            public Response process(Handler handler, List<String> args) {
-                return handler.bye();
             }
         };
 
