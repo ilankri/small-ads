@@ -14,7 +14,7 @@ destdir = classes
 PDFLATEX = pdflatex
 PDFLATEXFLAGS = -interaction nonstopmode -file-line-error -synctex=1
 REPORTPDF = report.pdf
-REPORTTEX = report.tex
+REPORTTEX = doc/report.tex
 
 texcompile = $(PDFLATEX) $(PDFLATEXFLAGS)
 
@@ -35,5 +35,6 @@ dist: clean $(REPORTPDF)
 
 clean:
 	$(RM) -R $(destdir)
-	$(RM) $(REPORTTEX:.tex=.log) $(REPORTTEX:.tex=.aux)		\
-		$(REPORTTEX:.tex=.out) $(REPORTTEX:.tex=.synctex.gz)
+	$(RM) $(REPORTPDF:.pdf=.log) $(REPORTPDF:.pdf=.aux)		\
+		$(REPORTPDF:.pdf=.out) $(REPORTPDF:.pdf=.synctex.gz)
+	$(RM) $(REPORTPDF)
